@@ -24,7 +24,7 @@ contract CBDCEscrow is Ownable {
     event EscrowFunded(uint256 escrowId);
     event EscrowCompleted(uint256 escrowId);
     event EscrowCancelled(uint256 escrowId);
-    event CheckBalance(string text, uint amount);
+    event CheckBalance(uint amount);
 
     // Fill in the _cbdcToken address details in deploy file and uncomment the constructor code here.
 
@@ -35,6 +35,7 @@ contract CBDCEscrow is Ownable {
     // Create a new CBDC escrow
     function createEscrow(address _seller, uint256 _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
+        require(_seller != 0, "Seller Address should not be null");
         require(cbdcToken.transferFrom(msg.sender, address(this), _amount), "Transfer failed");
 
         uint256 escrowId = escrows.length;
@@ -46,7 +47,7 @@ contract CBDCEscrow is Ownable {
     // Fund the CBDC escrow
     function fundEscrow(uint256 _escrowId) external {
         require(_escrowId < escrows.length, "Invalid escrow ID");
-        Escrow storage escrow = escrows[_escrowId];
+        Escrow memory escrow = escrows[_escrowId];
         require(escrow.buyer == msg.sender, "Only the buyer can fund the escrow");
         require(escrow.state == EscrowState.Created, "Escrow is not in the Created state");
 
@@ -58,7 +59,7 @@ contract CBDCEscrow is Ownable {
     // Complete the CBDC escrow
     function completeEscrow(uint256 _escrowId) external onlyOwner {
         require(_escrowId < escrows.length, "Invalid escrow ID");
-        Escrow storage escrow = escrows[_escrowId];
+        Escrow memory escrow = escrows[_escrowId];
         require(escrow.state == EscrowState.Funded, "Escrow is not in the Funded state");
 
         // Transfer the CBDC to the seller
@@ -72,7 +73,7 @@ contract CBDCEscrow is Ownable {
     // Cancel the CBDC escrow
     function cancelEscrow(uint256 _escrowId) external {
         require(_escrowId < escrows.length, "Invalid escrow ID");
-        Escrow storage escrow = escrows[_escrowId];
+        Escrow memory escrow = escrows[_escrowId];
         require(msg.sender == escrow.buyer || msg.sender == owner(), "Only buyer or owner can cancel");
         require(escrow.state != EscrowState.Completed, "Escrow is already completed");
 
@@ -85,10 +86,8 @@ contract CBDCEscrow is Ownable {
     }
     
     function getBalance(address user_account) external returns (uint){
-    
-       string memory data = "User Balance is : ";
        uint user_bal = user_account.balance;
-       emit CheckBalance(data, user_bal );
+       emit CheckBalance(user_bal );
        return (user_bal);
 
     }
