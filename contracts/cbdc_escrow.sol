@@ -28,9 +28,9 @@ contract CBDCEscrow is Ownable {
 
     // Fill in the _cbdcToken address details in deploy file and uncomment the constructor code here.
 
-    // constructor(address _cbdcToken) {
-    //     cbdcToken = IERC20(_cbdcToken);
-    // }
+    constructor(address _cbdcToken) {
+        cbdcToken = IERC20(_cbdcToken);
+    }
 
     // Create a new CBDC escrow
     function createEscrow(address _seller, uint256 _amount) external {
