@@ -1,8 +1,10 @@
 import { ethers } from "hardhat";
 
+const tokenAddress = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+
 async function main() {
 
-  const cbdc_escrow = await ethers.deployContract("CBDCEscrow");
+  const cbdc_escrow = await ethers.deployContract("CBDCEscrow", [tokenAddress]);
 
   await cbdc_escrow.waitForDeployment();
 
